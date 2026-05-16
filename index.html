@@ -277,9 +277,30 @@
 <div id="end-screen" class="screen">
   <h1>✅ Практика завершена</h1>
   <p>Почувствуйте спокойствие и лёгкость.</p>
-  <button class="start-btn" id="restart-btn">Попробовать ещё раз</button>
-  <a href="https://genius333.github.io/li-wei-site/" class="cta-link">← Вернуться на главную</a>
-  <p class="bonus-text">Понравилось? Попробуйте 3 практики бесплатно →</p>
+  <p style="color: var(--sakura); margin-bottom: 25px;">Вы сделали шаг к гармонии 🌸</p>
+  
+  <button class="start-btn" id="restart-btn" style="margin-bottom: 15px;">🔄 Попробовать ещё раз</button>
+  
+  <a href="https://genius333.github.io/li-wei-site/" 
+     style="
+       display: inline-block;
+       background: rgba(255,215,0,0.15);
+       border: 2px solid var(--accent);
+       color: var(--accent);
+       padding: 14px 28px;
+       border-radius: 12px;
+       text-decoration: none;
+       font-weight: 600;
+       margin-bottom: 20px;
+       transition: all 0.3s;     "
+     onmouseover="this.style.background='rgba(255,215,0,0.3)'"
+     onmouseout="this.style.background='rgba(255,215,0,0.15)'">
+    📖 Узнать 5 техник с сайта
+  </a>
+  
+  <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 15px;">
+    Понравилось? Поделись с друзьями 🌸
+  </p>
 </div>
 
 <script>
@@ -292,7 +313,8 @@
     isPlaying: false,
     isPaused: false,
     soundOn: true,
-    currentPhase: 'idle', // inhale, hold, exhale    timerInterval: null,
+    currentPhase: 'idle', // inhale, hold, exhale
+    timerInterval: null,
     phaseTimeout: null,
     audioCtx: null,
     gainNode: null,
@@ -320,37 +342,41 @@
     p.style.width = (20 + Math.random()*20) + 'px';
     petalArea.appendChild(p);
   }
-
   // --- АУДИО (Web Audio API) ---
   function initAudio() {
     if(state.audioCtx) return;
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     state.audioCtx = new AudioContext();
     state.gainNode = state.audioCtx.createGain();
-    state.gainNode.gain.value = state.soundOn ? 0.3 : 0;
+    state.gainNode.gain.value = state.soundOn ? 0.5 : 0; // ✅ Увеличил громкость
     state.gainNode.connect(state.audioCtx.destination);
 
-    // Мягкий эмбиент-дрон
+    // ✅ Мягкий эмбиент — поднял частоту
     state.osc = state.audioCtx.createOscillator();
     state.osc.type = 'sine';
-    state.osc.frequency.value = 130; // Низкий тон
+    state.osc.frequency.value = 220; // ✅ Было 130, стало 220
     
     // LFO для "дыхания" звука
     state.lfo = state.audioCtx.createOscillator();
-    state.lfo.frequency.value = 0.15;
+    state.lfo.frequency.value = 0.1; // ✅ Замедлил
     const lfoGain = state.audioCtx.createGain();
-    lfoGain.gain.value = 40;
+    lfoGain.gain.value = 30; // ✅ Уменьшил модуляцию
     state.lfo.connect(lfoGain);
-    lfoGain.connect(state.osc.frequency);    
+    lfoGain.connect(state.osc.frequency);
+    
     state.osc.connect(state.gainNode);
     state.osc.start();
     state.lfo.start();
+    
+    // ✅ Плавное нарастание громкости (fade-in)
+    state.gainNode.gain.setValueAtTime(0, state.audioCtx.currentTime);
+    state.gainNode.gain.linearRampToValueAtTime(state.soundOn ? 0.5 : 0, state.audioCtx.currentTime + 2);
   }
 
   function toggleSound() {
     state.soundOn = !state.soundOn;
     if(state.gainNode) {
-      state.gainNode.gain.setTargetAtTime(state.soundOn ? 0.3 : 0, state.audioCtx.currentTime, 0.1);
+      state.gainNode.gain.setTargetAtTime(state.soundOn ? 0.5 : 0, state.audioCtx.currentTime, 0.1);
     }
     $('sound-btn').classList.toggle('active-sound', state.soundOn);
     $('sound-btn').textContent = state.soundOn ? '🔊' : '🔇';
@@ -364,8 +390,7 @@
     else if(state.mode === '4-7-8') state.durations = { inhale: 4000, hold: 7000, exhale: 8000 };
     else {
       state.durations = {
-        inhale: parseInt($('inh-slider').value) * 1000,
-        hold: parseInt($('hold-slider').value) * 1000,
+        inhale: parseInt($('inh-slider').value) * 1000,        hold: parseInt($('hold-slider').value) * 1000,
         exhale: parseInt($('exh-slider').value) * 1000
       };
     }
@@ -378,8 +403,11 @@
     const isUp = phase === 'inhale';
     const isHold = phase === 'hold';
 
-    // Текст и вибрация
-    phaseText.textContent = isUp ? 'Вдох...' : (isHold ? 'Задержка...' : 'Выдох...');
+    // ✅ ОБНОВЛЁННЫЙ ТЕКСТ
+    if (isUp) phaseText.textContent = '👃 Вдох носом...';
+    else if (isHold) phaseText.textContent = '⏸️ Задержка...';
+    else phaseText.textContent = '👄 Выдох ртом...';
+    
     if(navigator.vibrate && !isHold) navigator.vibrate(30);
 
     // Анимация CSS
@@ -390,7 +418,8 @@
 
     // Цепочка фаз
     state.phaseTimeout = setTimeout(() => {
-      if(phase === 'inhale') runPhase(state.durations.hold > 0 ? 'hold' : 'exhale');      else if(phase === 'hold') runPhase('exhale');
+      if(phase === 'inhale') runPhase(state.durations.hold > 0 ? 'hold' : 'exhale');
+      else if(phase === 'hold') runPhase('exhale');
       else runPhase('inhale');
     }, dur);
   }
@@ -408,16 +437,14 @@
     $('pause-btn').textContent = state.isPaused ? '▶️' : '⏸️';
     if(state.isPaused) {
       clearTimeout(state.phaseTimeout);
-      petal.style.transition = 'none'; // Останавливаем анимацию
+      petal.style.transition = 'none';
     } else {
-      // Возобновляем с текущей фазы (упрощённо: перезапускаем цикл)
-      runPhase(state.currentPhase === 'hold' ? 'exhale' : state.currentPhase);
-    }
+      runPhase(state.currentPhase === 'hold' ? 'exhale' : state.currentPhase);    }
   }
 
   // --- ТАЙМЕР ---
   function startTimer() {
-    if(state.totalTime === 0) { // Бесконечность
+    if(state.totalTime === 0) {
       timerDisplay.textContent = '∞';
       return;
     }
@@ -439,7 +466,8 @@
   function updateTimerDisplay() {
     if(state.totalTime === 0) return;
     const m = Math.floor(state.timeLeft / 60000);
-    const s = Math.floor((state.timeLeft % 60000) / 1000);    timerDisplay.textContent = `Осталось: ${m}:${s.toString().padStart(2,'0')}`;
+    const s = Math.floor((state.timeLeft % 60000) / 1000);
+    timerDisplay.textContent = `Осталось: ${m}:${s.toString().padStart(2,'0')}`;
   }
 
   function endPractice() {
@@ -447,7 +475,7 @@
     clearInterval(state.timerInterval);
     clearTimeout(state.phaseTimeout);
     petal.style.transition = 'transform 2s ease';
-    petal.style.transform = 'translateY(0) scale(0.8) opacity(0)';
+    petal.style.transform = 'translateY(0) scale(0.8)';
     setTimeout(() => showScreen('end'), 500);
   }
 
@@ -460,8 +488,7 @@
     timerDisplay.textContent = '';
     petal.style.transition = 'none';
     petal.style.transform = 'translateY(0) rotate(0) scale(1)';
-    showScreen('setup');
-  }
+    showScreen('setup');  }
 
   // --- UI НАВИГАЦИЯ ---
   function showScreen(name) {
@@ -470,7 +497,6 @@
   }
 
   // --- ОБРАБОТЧИКИ ---
-  // Режимы
   document.querySelectorAll('#mode-group .btn-option').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#mode-group .btn-option').forEach(b => b.classList.remove('selected'));
@@ -481,16 +507,15 @@
     });
   });
 
-  // Слайдеры
   ['inh', 'hold', 'exh'].forEach(k => {
     const slider = $(`${k}-slider`);
     const label = $(`${k}-val`);
     slider.addEventListener('input', () => {
       label.textContent = slider.value + 'с';
       if(state.mode === 'custom') updateDurations();
-    });  });
+    });
+  });
 
-  // Длительность
   document.querySelectorAll('#dur-group .btn-option').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#dur-group .btn-option').forEach(b => b.classList.remove('selected'));
@@ -499,13 +524,11 @@
     });
   });
 
-  // Звук в настройках
   $('sound-toggle-setup').addEventListener('click', () => {
-    initAudio(); // Первый тап включает AudioContext
+    initAudio();
     toggleSound();
   });
 
-  // Кнопки управления
   $('start-btn').addEventListener('click', () => {
     initAudio();
     updateDurations();
@@ -514,21 +537,19 @@
   });
   $('pause-btn').addEventListener('click', pauseBreathing);
   $('sound-btn').addEventListener('click', () => { initAudio(); toggleSound(); });
-  $('reset-btn').addEventListener('click', resetGame);
-  $('close-btn').addEventListener('click', () => { resetGame(); window.location.href = 'https://genius333.github.io/li-wei-site/'; });
+  $('reset-btn').addEventListener('click', resetGame);  $('close-btn').addEventListener('click', () => { resetGame(); window.location.href = 'https://genius333.github.io/li-wei-site/'; });
   $('restart-btn').addEventListener('click', resetGame);
 
-  // Сохранение настроек (Бонус)
+  // Сохранение настроек
   try {
     const saved = JSON.parse(localStorage.getItem('breath_settings'));
     if(saved) {
       state.mode = saved.mode || '4-6';
       state.totalTime = saved.totalTime || 180000;
       state.soundOn = saved.soundOn !== false;
-      // Восстанавливаем UI...
       document.querySelector(`[data-mode="${state.mode}"]`).click();
       document.querySelector(`[data-dur="${state.totalTime/1000}"]`)?.click();
-      toggleSound(); // Синхронизируем состояние
+      toggleSound();
     }
   } catch(e){}
   window.addEventListener('beforeunload', () => {
@@ -537,5 +558,6 @@
     }));
   });
 
-</script></body>
+</script>
+</body>
 </html>
