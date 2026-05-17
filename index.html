@@ -295,7 +295,7 @@
        transition: all 0.3s;     "
      onmouseover="this.style.background='rgba(255,215,0,0.3)'"
      onmouseout="this.style.background='rgba(255,215,0,0.15)'">
-    📖 Узнать 5 техник с сайта
+    📖 Узнать 3 практики с сайта
   </a>
   
   <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 15px;">
@@ -318,9 +318,8 @@
     phaseTimeout: null,
     audioCtx: null,
     gainNode: null,
-    music: null,
-    natureAudio: null,
-    birdsAudio: null
+    birdsAudio: null,
+    ambientAudio: null
   };
 
   // --- DOM ---
@@ -341,8 +340,8 @@
     p.style.animationDuration = (8 + Math.random()*10) + 's';
     p.style.animationDelay = (Math.random()*10) + 's';
     p.style.width = (20 + Math.random()*20) + 'px';
-    petalArea.appendChild(p);  }
-
+    petalArea.appendChild(p);
+  }
   // --- АУДИО (Web Audio API + HTML5 Audio) ---
   function initAudio() {
     if(state.audioCtx) return;
@@ -356,22 +355,16 @@
     state.gainNode.gain.value = state.soundOn ? 0.3 : 0;
     state.gainNode.connect(state.audioCtx.destination);
 
-    // ✅ 3. ЗАГРУЖАЕМ МУЗЫКУ (loop.mp3 - основной трек)
-    state.music = new Audio('loop.mp3');
-    state.music.loop = true;
-    state.music.volume = state.soundOn ? 0.4 : 0;
-    state.music.crossOrigin = "anonymous";
-
-    // ✅ 4. ЗАГРУЖАЕМ ПРИРОДУ (birds.mp3 - птицы)
+    // ✅ 3. ЗАГРУЖАЕМ ПТИЦ (birds.mp3)
     state.birdsAudio = new Audio('birds.mp3');
     state.birdsAudio.loop = true;
-    state.birdsAudio.volume = state.soundOn ? 0.3 : 0; // Чуть тише
+    state.birdsAudio.volume = state.soundOn ? 0.3 : 0;
     state.birdsAudio.crossOrigin = "anonymous";
 
-    // ✅ 5. ЗАГРУЖАЕМ AMBIENT (ambient.mp3 - фон)
+    // ✅ 4. ЗАГРУЖАЕМ AMBIENT (ambient.mp3)
     state.ambientAudio = new Audio('ambient.mp3');
     state.ambientAudio.loop = true;
-    state.ambientAudio.volume = state.soundOn ? 0.25 : 0; // Самый тихий
+    state.ambientAudio.volume = state.soundOn ? 0.25 : 0;
     state.ambientAudio.crossOrigin = "anonymous";
   }
 
@@ -379,18 +372,16 @@
     state.soundOn = !state.soundOn;
     
     // Обновляем громкость всех треков
-    if(state.music) state.music.volume = state.soundOn ? 0.4 : 0;
     if(state.birdsAudio) state.birdsAudio.volume = state.soundOn ? 0.3 : 0;
     if(state.ambientAudio) state.ambientAudio.volume = state.soundOn ? 0.25 : 0;
     
     // Пауза/воспроизведение
     if(!state.soundOn) {
-      if(state.music) state.music.pause();
       if(state.birdsAudio) state.birdsAudio.pause();
       if(state.ambientAudio) state.ambientAudio.pause();
     } else if(state.isPlaying) {
-      if(state.music) state.music.play();
-      if(state.birdsAudio) state.birdsAudio.play();      if(state.ambientAudio) state.ambientAudio.play();
+      if(state.birdsAudio) state.birdsAudio.play();
+      if(state.ambientAudio) state.ambientAudio.play();
     }
     
     // Обновляем иконки
@@ -399,7 +390,6 @@
     $('sound-toggle-setup').textContent = state.soundOn ? '🔊 Звук: ВКЛ' : '🔇 Звук: ВЫКЛ';
     $('sound-toggle-setup').classList.toggle('selected', state.soundOn);
   }
-
   // --- ЛОГИКА ДЫХАНИЯ ---
   function updateDurations() {
     if(state.mode === '4-6') state.durations = { inhale: 4000, hold: 0, exhale: 6000 };
@@ -440,17 +430,16 @@
       else runPhase('inhale');
     }, dur);
   }
+
   function startBreathing() {
     state.isPlaying = true;
     state.isPaused = false;
     showScreen('game');
     phaseText.textContent = 'Приготовьтесь...';
     
-    // ✅ ЗАПУСКАЕМ ВСЕ АУДИО
+    // ✅ ЗАПУСКАЕМ АУДИО
     if(state.soundOn) {
-      if(state.music) state.music.play().catch(e => console.log('Music error:', e));
-      if(state.birdsAudio) state.birdsAudio.play().catch(e => console.log('Birds error:', e));
-      if(state.ambientAudio) state.ambientAudio.play().catch(e => console.log('Ambient error:', e));
+      if(state.birdsAudio) state.birdsAudio.play().catch(e => console.log('Birds error:', e));      if(state.ambientAudio) state.ambientAudio.play().catch(e => console.log('Ambient error:', e));
     }
     
     setTimeout(() => runPhase('inhale'), 1000);
@@ -461,7 +450,6 @@
     $('pause-btn').textContent = state.isPaused ? '▶️' : '⏸️';
     
     // ⏯️ Пауза для музыки
-    if(state.music) state.isPaused ? state.music.pause() : state.music.play();
     if(state.birdsAudio) state.isPaused ? state.birdsAudio.pause() : state.birdsAudio.play();
     if(state.ambientAudio) state.isPaused ? state.ambientAudio.pause() : state.ambientAudio.play();
     
@@ -488,7 +476,8 @@
       if(state.timeLeft <= 0) {
         state.timeLeft = 0;
         endPractice();
-      }      updateTimerDisplay();
+      }
+      updateTimerDisplay();
       progressFill.style.width = ((state.totalTime - state.timeLeft) / state.totalTime * 100) + '%';
     }, 1000);
   }
@@ -499,14 +488,12 @@
     const s = Math.floor((state.timeLeft % 60000) / 1000);
     timerDisplay.textContent = `Осталось: ${m}:${s.toString().padStart(2,'0')}`;
   }
-
   function endPractice() {
     state.isPlaying = false;
     clearInterval(state.timerInterval);
     clearTimeout(state.phaseTimeout);
     
     // Останавливаем музыку
-    if(state.music) { state.music.pause(); state.music.currentTime = 0; }
     if(state.birdsAudio) { state.birdsAudio.pause(); state.birdsAudio.currentTime = 0; }
     if(state.ambientAudio) { state.ambientAudio.pause(); state.ambientAudio.currentTime = 0; }
     
@@ -526,7 +513,6 @@
     petal.style.transform = 'translateY(0) rotate(0) scale(1)';
     
     // Останавливаем аудио
-    if(state.music) { state.music.pause(); state.music.currentTime = 0; }
     if(state.birdsAudio) { state.birdsAudio.pause(); state.birdsAudio.currentTime = 0; }
     if(state.ambientAudio) { state.ambientAudio.pause(); state.ambientAudio.currentTime = 0; }
     
@@ -538,6 +524,7 @@
     Object.values(screens).forEach(s => s.classList.remove('active'));
     screens[name].classList.add('active');
   }
+
   // --- ОБРАБОТЧИКИ ---
   document.querySelectorAll('#mode-group .btn-option').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -550,8 +537,7 @@
   });
 
   ['inh', 'hold', 'exh'].forEach(k => {
-    const slider = $(`${k}-slider`);
-    const label = $(`${k}-val`);
+    const slider = $(`${k}-slider`);    const label = $(`${k}-val`);
     slider.addEventListener('input', () => {
       label.textContent = slider.value + 'с';
       if(state.mode === 'custom') updateDurations();
@@ -586,7 +572,8 @@
   // Сохранение настроек
   try {
     const saved = JSON.parse(localStorage.getItem('breath_settings'));
-    if(saved) {      state.mode = saved.mode || '4-6';
+    if(saved) {
+      state.mode = saved.mode || '4-6';
       state.totalTime = saved.totalTime || 180000;
       state.soundOn = saved.soundOn !== false;
       document.querySelector(`[data-mode="${state.mode}"]`).click();
@@ -599,7 +586,6 @@
       mode: state.mode, totalTime: state.totalTime, soundOn: state.soundOn
     }));
   });
-
 </script>
 </body>
 </html>
