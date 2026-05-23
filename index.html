@@ -11,11 +11,13 @@
     --petal: #ffb7c5;
     --petal-light: #ffd1dc;
     --accent: #ffd700;
+    --accent-text: #8b0000;
     --text: #f0e6f0;
     --text-dim: #a09bb5;
     --font-main: 'Segoe UI', system-ui, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
   body {
     background: var(--bg);
     background-image: var(--bg-grad);
@@ -45,9 +47,9 @@
   }
 
   /* ЭКРАНЫ */
-  .screen {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;    display: flex;
+  .screen {    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -94,9 +96,9 @@
     color: var(--bg);
     border: none;
     padding: 16px 32px;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: bold;    cursor: pointer;
+    border-radius: 50px;    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
     margin-top: 10px;
     box-shadow: 0 4px 15px rgba(255,215,0,0.3);
     transition: transform 0.1s;
@@ -143,9 +145,9 @@
     text-align: center;
     margin: 20px 0 10px;
     font-weight: 500;
-    letter-spacing: 1px;
-    min-height: 34px;
-  }  #timer-display {
+    letter-spacing: 1px;    min-height: 34px;
+  }
+  #timer-display {
     position: absolute;
     top: 15px;
     right: 20px;
@@ -174,18 +176,63 @@
   .ctrl-btn:active { background: rgba(255,215,0,0.3); transform: scale(0.9); }
   .ctrl-btn.active-sound { background: var(--accent); color: var(--bg); }
 
-  /* END SCREEN */
-  #end-screen h1 { color: var(--accent); margin-bottom: 10px; }
-  #end-screen p { color: var(--text-dim); margin-bottom: 25px; }
-  .cta-link {
-    display: inline-block;
-    margin-top: 15px;
-    color: var(--accent);
-    text-decoration: none;
-    border-bottom: 1px dashed var(--accent);
-    padding-bottom: 2px;
+  /* END SCREEN - ОБНОВЛЁННЫЙ ПО ТЗ */
+  #end-screen {
+    text-align: center;
+    padding: 30px 20px;
   }
-  .bonus-text { margin-top: 20px; font-size: 14px; color: var(--text-dim); }
+  #end-screen h1 { 
+    color: var(--accent); 
+    margin-bottom: 12px; 
+    font-size: clamp(22px, 6vw, 28px);
+  }
+  #end-screen p { 
+    color: var(--text-dim); 
+    margin-bottom: 8px; 
+    font-size: clamp(14px, 4vw, 16px);
+    line-height: 1.4;
+  }
+  #end-screen .sakura-text {
+    color: #ffb6c1;
+    margin-bottom: 25px !important;  }
+  
+  /* ГЛАВНАЯ КНОПКА ПО ТЗ */
+  .cta-main-btn {
+    display: block;
+    width: 90%;
+    max-width: 400px;
+    background: var(--accent);
+    color: var(--accent-text);
+    border: none;
+    padding: 18px 24px;
+    border-radius: 35px;
+    font-size: clamp(16px, 4.5vw, 18px);
+    font-weight: 700;
+    cursor: pointer;
+    margin: 20px auto 15px;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: pulse 2s infinite;
+    text-decoration: none;
+  }
+  .cta-main-btn:active { 
+    transform: scale(0.98); 
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  }
+  .cta-main-btn:hover {
+    transform: scale(1.02);
+  }
+  
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4); }
+    50% { box-shadow: 0 6px 25px rgba(255, 215, 0, 0.7); }
+  }
+  
+  .share-text {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-top: 10px;
+  }
 
   /* АДАПТИВ */
   @media (max-height: 600px) {
@@ -194,9 +241,9 @@
     .controls { padding: 10px 0 20px; }
   }
   @media (min-width: 768px) {
-    .btn-group { max-width: 400px; margin: 0 auto; }  }
-</style>
-</head>
+    .btn-group { max-width: 400px; margin: 0 auto; }
+  }
+</style></head>
 <body>
 
 <div id="progress-bar"><div id="progress-fill"></div></div>
@@ -245,11 +292,9 @@
   </div>
   <button class="start-btn" id="start-btn">НАЧАТЬ ПРАКТИКУ</button>
 </div>
-
 <!-- ЭКРАН ПРАКТИКИ -->
 <div id="game-screen" class="screen">
   <div class="petal-container" id="petal-area">
-    <!-- SVG Лепесток -->
     <svg id="main-petal" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M50 10 C20 30, 5 60, 20 90 C30 105, 45 115, 50 115 C55 115, 70 105, 80 90 C95 60, 80 30, 50 10Z" fill="url(#petalGrad)" stroke="#fff" stroke-width="1" stroke-opacity="0.3"/>
       <path d="M50 115 L50 20" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"/>
@@ -260,11 +305,8 @@
         </linearGradient>
       </defs>
     </svg>
-    <!-- Фоновые лепестки генерируются JS -->
   </div>
-  
   <div id="phase-text">Приготовьтесь...</div>
-  
   <div class="controls">
     <button class="ctrl-btn" id="pause-btn">⏸️</button>
     <button class="ctrl-btn active-sound" id="sound-btn">🔊</button>
@@ -273,34 +315,18 @@
   </div>
 </div>
 
-<!-- ЭКРАН ЗАВЕРШЕНИЯ -->
+<!-- ЭКРАН ЗАВЕРШЕНИЯ (ОБНОВЛЁННЫЙ) -->
 <div id="end-screen" class="screen">
   <h1>✅ Практика завершена</h1>
   <p>Почувствуйте спокойствие и лёгкость.</p>
-  <p style="color: var(--sakura); margin-bottom: 25px;">Вы сделали шаг к гармонии 🌸</p>
+  <p class="sakura-text">Вы сделали шаг к гармонии 🌸</p>
   
-  <button class="start-btn" id="restart-btn" style="margin-bottom: 15px;">🔄 Попробовать ещё раз</button>
-  
-  <a href="https://genius333.github.io/li-wei-site/" 
-     style="
-       display: inline-block;
-       background: rgba(255,215,0,0.15);
-       border: 2px solid var(--accent);
-       color: var(--accent);
-       padding: 14px 28px;
-       border-radius: 12px;
-       text-decoration: none;
-       font-weight: 600;
-       margin-bottom: 20px;
-       transition: all 0.3s;     "
-     onmouseover="this.style.background='rgba(255,215,0,0.3)'"
-     onmouseout="this.style.background='rgba(255,215,0,0.15)'">
-    📖 Узнать 3 практики с сайта
+  <!-- ЕДИНАЯ ГЛАВНАЯ КНОПКА ПО ТЗ -->
+  <a href="https://genius333.github.io/li-wei-site/#practices" class="cta-main-btn">
+    🚀 Продолжить путь к здоровью →
   </a>
   
-  <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 15px;">
-    Понравилось? Поделись с друзьями 🌸
-  </p>
+  <p class="share-text">Понравилось? Поделись с друзьями 🌸</p>
 </div>
 
 <script>
@@ -308,15 +334,14 @@
   const state = {
     mode: '4-6',
     durations: { inhale: 4000, hold: 0, exhale: 6000 },
-    totalTime: 180000, // 3 мин по умолчанию
+    totalTime: 180000,
     timeLeft: 180000,
     isPlaying: false,
     isPaused: false,
     soundOn: true,
-    currentPhase: 'idle', // inhale, hold, exhale
+    currentPhase: 'idle',
     timerInterval: null,
-    phaseTimeout: null,
-    audioCtx: null,
+    phaseTimeout: null,    audioCtx: null,
     gainNode: null,
     birdsAudio: null,
     ambientAudio: null
@@ -331,7 +356,7 @@
   const timerDisplay = $('timer-display');
   const petalArea = $('petal-area');
 
-  // --- ИНИЦИАЛИЗАЦИЯ ФОНОВЫХ ЛЕПЕСТКОВ ---
+  // --- ФОНОВЫЕ ЛЕПЕСТКИ ---
   for(let i=0; i<5; i++) {
     const p = document.createElement('div');
     p.className = 'bg-petal';
@@ -342,26 +367,21 @@
     p.style.width = (20 + Math.random()*20) + 'px';
     petalArea.appendChild(p);
   }
-  // --- АУДИО (Web Audio API + HTML5 Audio) ---
+
+  // --- АУДИО ---
   function initAudio() {
     if(state.audioCtx) return;
-    
-    // ✅ 1. Создаём аудио контекст
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     state.audioCtx = new AudioContext();
-    
-    // ✅ 2. Создаём узел громкости
     state.gainNode = state.audioCtx.createGain();
     state.gainNode.gain.value = state.soundOn ? 0.3 : 0;
     state.gainNode.connect(state.audioCtx.destination);
 
-    // ✅ 3. ЗАГРУЖАЕМ ПТИЦ (birds.mp3)
     state.birdsAudio = new Audio('birds.mp3');
     state.birdsAudio.loop = true;
     state.birdsAudio.volume = state.soundOn ? 0.3 : 0;
     state.birdsAudio.crossOrigin = "anonymous";
 
-    // ✅ 4. ЗАГРУЖАЕМ AMBIENT (ambient.mp3)
     state.ambientAudio = new Audio('ambient.mp3');
     state.ambientAudio.loop = true;
     state.ambientAudio.volume = state.soundOn ? 0.25 : 0;
@@ -370,12 +390,7 @@
 
   function toggleSound() {
     state.soundOn = !state.soundOn;
-    
-    // Обновляем громкость всех треков
-    if(state.birdsAudio) state.birdsAudio.volume = state.soundOn ? 0.3 : 0;
-    if(state.ambientAudio) state.ambientAudio.volume = state.soundOn ? 0.25 : 0;
-    
-    // Пауза/воспроизведение
+    if(state.birdsAudio) state.birdsAudio.volume = state.soundOn ? 0.3 : 0;    if(state.ambientAudio) state.ambientAudio.volume = state.soundOn ? 0.25 : 0;
     if(!state.soundOn) {
       if(state.birdsAudio) state.birdsAudio.pause();
       if(state.ambientAudio) state.ambientAudio.pause();
@@ -383,13 +398,12 @@
       if(state.birdsAudio) state.birdsAudio.play();
       if(state.ambientAudio) state.ambientAudio.play();
     }
-    
-    // Обновляем иконки
     $('sound-btn').classList.toggle('active-sound', state.soundOn);
     $('sound-btn').textContent = state.soundOn ? '🔊' : '🔇';
     $('sound-toggle-setup').textContent = state.soundOn ? '🔊 Звук: ВКЛ' : '🔇 Звук: ВЫКЛ';
     $('sound-toggle-setup').classList.toggle('selected', state.soundOn);
   }
+
   // --- ЛОГИКА ДЫХАНИЯ ---
   function updateDurations() {
     if(state.mode === '4-6') state.durations = { inhale: 4000, hold: 0, exhale: 6000 };
@@ -410,49 +424,40 @@
     const isUp = phase === 'inhale';
     const isHold = phase === 'hold';
 
-    // ✅ ОБНОВЛЁННЫЙ ТЕКСТ
     if (isUp) phaseText.textContent = '👃 Вдох носом...';
     else if (isHold) phaseText.textContent = '⏸️ Задержка...';
     else phaseText.textContent = '👄 Выдох ртом...';
     
     if(navigator.vibrate && !isHold) navigator.vibrate(30);
 
-    // Анимация CSS
     petal.style.transition = `transform ${dur}ms ease-in-out`;
     if(isUp) petal.style.transform = 'translateY(-35vh) rotate(4deg) scale(1.05)';
     else if(isHold) petal.style.transform = 'translateY(-35vh) rotate(-2deg) scale(1.02)';
     else petal.style.transform = 'translateY(0) rotate(0deg) scale(1)';
 
-    // Цепочка фаз
     state.phaseTimeout = setTimeout(() => {
       if(phase === 'inhale') runPhase(state.durations.hold > 0 ? 'hold' : 'exhale');
       else if(phase === 'hold') runPhase('exhale');
       else runPhase('inhale');
-    }, dur);
-  }
+    }, dur);  }
 
   function startBreathing() {
     state.isPlaying = true;
     state.isPaused = false;
     showScreen('game');
     phaseText.textContent = 'Приготовьтесь...';
-    
-    // ✅ ЗАПУСКАЕМ АУДИО
     if(state.soundOn) {
-      if(state.birdsAudio) state.birdsAudio.play().catch(e => console.log('Birds error:', e));      if(state.ambientAudio) state.ambientAudio.play().catch(e => console.log('Ambient error:', e));
+      if(state.birdsAudio) state.birdsAudio.play().catch(e => console.log('Birds error:', e));
+      if(state.ambientAudio) state.ambientAudio.play().catch(e => console.log('Ambient error:', e));
     }
-    
     setTimeout(() => runPhase('inhale'), 1000);
   }
 
   function pauseBreathing() {
     state.isPaused = !state.isPaused;
     $('pause-btn').textContent = state.isPaused ? '▶️' : '⏸️';
-    
-    // ⏯️ Пауза для музыки
     if(state.birdsAudio) state.isPaused ? state.birdsAudio.pause() : state.birdsAudio.play();
     if(state.ambientAudio) state.isPaused ? state.ambientAudio.pause() : state.ambientAudio.play();
-    
     if(state.isPaused) {
       clearTimeout(state.phaseTimeout);
       petal.style.transition = 'none';
@@ -463,20 +468,13 @@
 
   // --- ТАЙМЕР ---
   function startTimer() {
-    if(state.totalTime === 0) {
-      timerDisplay.textContent = '∞';
-      return;
-    }
+    if(state.totalTime === 0) { timerDisplay.textContent = '∞'; return; }
     state.timeLeft = state.totalTime;
     updateTimerDisplay();
-    
     state.timerInterval = setInterval(() => {
       if(state.isPaused) return;
       state.timeLeft -= 1000;
-      if(state.timeLeft <= 0) {
-        state.timeLeft = 0;
-        endPractice();
-      }
+      if(state.timeLeft <= 0) { state.timeLeft = 0; endPractice(); }
       updateTimerDisplay();
       progressFill.style.width = ((state.totalTime - state.timeLeft) / state.totalTime * 100) + '%';
     }, 1000);
@@ -488,15 +486,12 @@
     const s = Math.floor((state.timeLeft % 60000) / 1000);
     timerDisplay.textContent = `Осталось: ${m}:${s.toString().padStart(2,'0')}`;
   }
+
   function endPractice() {
-    state.isPlaying = false;
-    clearInterval(state.timerInterval);
+    state.isPlaying = false;    clearInterval(state.timerInterval);
     clearTimeout(state.phaseTimeout);
-    
-    // Останавливаем музыку
     if(state.birdsAudio) { state.birdsAudio.pause(); state.birdsAudio.currentTime = 0; }
     if(state.ambientAudio) { state.ambientAudio.pause(); state.ambientAudio.currentTime = 0; }
-    
     petal.style.transition = 'transform 2s ease';
     petal.style.transform = 'translateY(0) scale(0.8)';
     setTimeout(() => showScreen('end'), 500);
@@ -511,15 +506,11 @@
     timerDisplay.textContent = '';
     petal.style.transition = 'none';
     petal.style.transform = 'translateY(0) rotate(0) scale(1)';
-    
-    // Останавливаем аудио
     if(state.birdsAudio) { state.birdsAudio.pause(); state.birdsAudio.currentTime = 0; }
     if(state.ambientAudio) { state.ambientAudio.pause(); state.ambientAudio.currentTime = 0; }
-    
     showScreen('setup');
   }
 
-  // --- UI НАВИГАЦИЯ ---
   function showScreen(name) {
     Object.values(screens).forEach(s => s.classList.remove('active'));
     screens[name].classList.add('active');
@@ -537,7 +528,8 @@
   });
 
   ['inh', 'hold', 'exh'].forEach(k => {
-    const slider = $(`${k}-slider`);    const label = $(`${k}-val`);
+    const slider = $(`${k}-slider`);
+    const label = $(`${k}-val`);
     slider.addEventListener('input', () => {
       label.textContent = slider.value + 'с';
       if(state.mode === 'custom') updateDurations();
@@ -545,29 +537,19 @@
   });
 
   document.querySelectorAll('#dur-group .btn-option').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#dur-group .btn-option').forEach(b => b.classList.remove('selected'));
+    btn.addEventListener('click', () => {      document.querySelectorAll('#dur-group .btn-option').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       state.totalTime = parseInt(btn.dataset.dur) * 1000;
     });
   });
 
-  $('sound-toggle-setup').addEventListener('click', () => {
-    initAudio();
-    toggleSound();
-  });
-
-  $('start-btn').addEventListener('click', () => {
-    initAudio();
-    updateDurations();
-    startBreathing();
-    startTimer();
-  });
+  $('sound-toggle-setup').addEventListener('click', () => { initAudio(); toggleSound(); });
+  $('start-btn').addEventListener('click', () => { initAudio(); updateDurations(); startBreathing(); startTimer(); });
   $('pause-btn').addEventListener('click', pauseBreathing);
   $('sound-btn').addEventListener('click', () => { initAudio(); toggleSound(); });
   $('reset-btn').addEventListener('click', resetGame);
   $('close-btn').addEventListener('click', () => { resetGame(); window.location.href = 'https://genius333.github.io/li-wei-site/'; });
-  $('restart-btn').addEventListener('click', resetGame);
+  // ❌ УДАЛЕНО: обработчик restart-btn (кнопка больше не нужна)
 
   // Сохранение настроек
   try {
@@ -576,7 +558,7 @@
       state.mode = saved.mode || '4-6';
       state.totalTime = saved.totalTime || 180000;
       state.soundOn = saved.soundOn !== false;
-      document.querySelector(`[data-mode="${state.mode}"]`).click();
+      document.querySelector(`[data-mode="${state.mode}"]`)?.click();
       document.querySelector(`[data-dur="${state.totalTime/1000}"]`)?.click();
       toggleSound();
     }
