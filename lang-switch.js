@@ -15,8 +15,31 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     const btn = document.createElement('button');
-    btn.innerHTML = IS_EN ? '🇺 RU' : '🇺 EN';
-    btn.style.cssText = `position:fixed;top:15px;right:15px;z-index:9999;background:rgba(26,31,58,0.9);color:#ffd700;border:1px solid rgba(255,215,0,0.4);padding:8px 14px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;backdrop-filter:blur(6px);box-shadow:0 4px 12px rgba(0,0,0,0.3);transition:all 0.2s;`;
+    // ✅ ТЕПЕРЬ ПОКАЗЫВАЕМ ТЕКУЩИЙ ЯЗЫК
+    btn.innerHTML = IS_EN ? '🇺🇸 EN' : '🇺 RU';
+    btn.style.cssText = `
+      position: fixed;
+      top: 50px;
+      right: 15px;
+      z-index: 9999;
+      background: rgba(26,31,58,0.9);
+      color: #ffd700;
+      border: 1px solid rgba(255,215,0,0.4);
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    `;
+    btn.onmouseenter = () => btn.style.transform = 'scale(1.05)';
+    btn.onmouseleave = () => btn.style.transform = 'scale(1)';
+    
     btn.onclick = () => {
       localStorage.setItem('liwei_lang', IS_EN ? 'ru' : 'en');
       window.location.replace(IS_EN ? RU_URL : EN_URL);
